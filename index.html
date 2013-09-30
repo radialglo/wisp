@@ -2,6 +2,17 @@
 <html>
 	<head>
 		<script src="js/wisp.js"></script>
+		<script type="text/javascript">
+			window.onload = function() {
+
+			    var Forest = new WispForest({
+			      id: 'pixie',
+			      count: 50,
+			      render_type: "random"
+			    });
+
+			};
+		</script>
 		<style type="text/css">
 			body {
 				background: black;
@@ -52,6 +63,8 @@
 				background-image: -webkit-linear-gradient(top, rgba(0, 0, 0, 0.28) 0%, rgba(246, 246, 246, 0) 100%);
 				background-image: -ms-linear-gradient(top, rgba(0, 0, 0, 0.28) 0%, rgba(246, 246, 246, 0) 100%);
 				*/
+
+
 			}
 			
 
@@ -61,7 +74,9 @@
 
 	<body>
 			<canvas id="pixie"></canvas>
+			<!--
 			<div id="pattern"></div>
+			-->
 	</body>
 
 </html>

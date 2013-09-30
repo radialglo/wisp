@@ -22,9 +22,9 @@
     var lastTime = 0;
     var vendors = ['ms', 'moz', 'webkit', 'o'];
     for(var x = 0; x < vendors.length && !window.requestAnimationFrame; ++x) {
-        window.requestAnimationFrame = window[vendors[x]+'RequestAnimationFrame'];
-        window.cancelAnimationFrame = window[vendors[x]+'CancelAnimationFrame'] 
-                                   || window[vendors[x]+'CancelRequestAnimationFrame'];
+        window.requestAnimationFrame = window[vendors[x] + 'RequestAnimationFrame'];
+        window.cancelAnimationFrame = window[vendors[x] + 'CancelAnimationFrame'] 
+                                   || window[vendors[x] + 'CancelRequestAnimationFrame'];
     }
  
     if (!window.requestAnimationFrame)
@@ -57,7 +57,23 @@
     , MAX_Y = 2
     , MAX_RADIUS = 10;
 
-  function Wisp() {
+ // render types
+
+ var RENDER_TYPE = {
+     jellyfish: "jellyfish"
+   , firefly: "firefly"
+   , orb: "orb"
+   , random: "random"
+ };
+
+ var RENDER_VALUES = [];
+ for(var key in RENDER_TYPE) {
+    if(key !== "random") {
+      RENDER_VALUES.push(RENDER_TYPE[key]);
+    }
+ }
+
+  function Wisp(cfg) {
       this.x = WIDTH * Math.random();
       this.y = HEIGHT * Math.random();
       this.r = ((MAX_RADIUS - 1) * Math.random()) + 1;
@@ -67,6 +83,7 @@
       this.fr = Math.random() * this.hl;
       this.df = Math.random() + 1; 
       this.stop = Math.random() * .2 + .4;
+      this.render = this[cfg.render_type];
   }
 
   Wisp.prototype = {
@@ -98,23 +115,9 @@
       ctx.closePath();
 
       
-      g = ctx.createRadialGradient(this.x , this.y, 0, this.x, this.y, this.r * op );
+      var g = ctx.createRadialGradient(this.x , this.y, 0, this.x, this.y, this.r * op );
 
-      
-      // Jellyfish
-      g.addColorStop(0.0, 'rgba(64,185,249,0)');
-      g.addColorStop(this.stop, 'rgba(64,185,249,' + (op * .2) + ')');
-      g.addColorStop(1.0, 'rgba(1,162,255,' + op + ')');
-      
-      
-      
-      
-      // Firefly
-      g.addColorStop(0.0, 'rgba(1,162,255,' + op + ')');
-      g.addColorStop(this.stop, 'rgba(64,185,249,' + (op * .2) + ')');
-      g.addColorStop(1.0, 'rgba(64,185,249,0)');
-      
-      
+      this.render(g, op);
     
       ctx.fillStyle = g;
       ctx.fill();
@@ -137,7 +140,26 @@
       if( this.y > HEIGHT || this.y < 0) {
         this.dy *= -1;
       }
+    },
+
+    // Rendering Functions
+    jellyfish: function(g, op) {
+      g.addColorStop(0.0, 'rgba(64,185,249,0)');
+      g.addColorStop(this.stop, 'rgba(64,185,249,' + (op * .2) + ')');
+      g.addColorStop(1.0, 'rgba(1,162,255,' + op + ')');
+    },
+
+    firefly: function(g, op) {
+      g.addColorStop(0.0, 'rgba(1,162,255,' + op + ')');
+      g.addColorStop(this.stop, 'rgba(64,185,249,' + (op * .2) + ')');
+      g.addColorStop(1.0, 'rgba(64,185,249,0)');
+    },
+
+    orb: function(g, op) {
+      this.jellyfish.apply(this, arguments);
+      this.firefly.apply(this, arguments);
     }
+    
   }
 
   /*==== ====*/
@@ -157,8 +179,24 @@
     this.canvas = canvas;
     this.ctx = ctx;
 
+    var render_type = cfg.render_type
+      , render_random = (cfg.render_type === RENDER_TYPE.random)
+      , render_count = RENDER_VALUES.length;
+
+    if(!RENDER_TYPE.hasOwnProperty(render_type)) {
+      throw new Error("Invalid Render Type");
+    };
+
+
+
     for (var i = 0; i < count; i++) {
-          wisps[i] = new Wisp();
+
+          if (render_random) {
+              var idx = Math.floor((Math.random() * 100 % render_count))
+              render_type = RENDER_VALUES[idx];
+          }
+
+          wisps[i] = new Wisp({render_type: render_type});
     }
 
     this.wisps = wisps
@@ -193,12 +231,4 @@
 
 })();
 
-window.onload = function() {
 
-
-    var Forest = new WispForest({
-      id: 'pixie',
-      count: 50
-    });
-
-};
