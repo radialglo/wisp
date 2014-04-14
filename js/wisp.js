@@ -74,8 +74,8 @@
  }
 
   function Wisp(cfg) {
-      this.x = WIDTH * Math.random();
-      this.y = HEIGHT * Math.random();
+      this.x = !isNaN(parseInt(cfg.startX)) ? cfg.startX : WIDTH * Math.random();
+      this.y = !isNaN(parseInt(cfg.startY)) ? cfg.startY : HEIGHT * Math.random();
       this.r = ((MAX_RADIUS - 1) * Math.random()) + 1;
       this.dx = (Math.random() * MAX_X) * (Math.random() < .5 ? -1 : 1);
       this.dy = (Math.random() * MAX_Y) * (Math.random() < .5 ? -1 : 1);
@@ -206,7 +206,7 @@
               render_type = RENDER_VALUES[idx];
           }
 
-          wisps[i] = new Wisp({render_type: render_type});
+          wisps[i] = new Wisp({render_type: render_type, startX: cfg.startX, startY: cfg.startY});
     }
 
     window.addEventListener("resize", function(){
