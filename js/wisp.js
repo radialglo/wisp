@@ -134,10 +134,20 @@
 
       // if out of bounds start moving in other direction
       if (this.x > WIDTH || this.x < 0) {
+        if (this.x > WIDTH) {
+            this.x = WIDTH;
+        } else {
+            this.x = 0;
+        }
         this.dx *= -1;
       }
 
       if( this.y > HEIGHT || this.y < 0) {
+        if (this.y > HEIGHT) {
+            this.y = HEIGHT;
+        } else {
+            this.y = 0;
+        }
         this.dy *= -1;
       }
     },
@@ -199,8 +209,15 @@
           wisps[i] = new Wisp({render_type: render_type});
     }
 
+    window.addEventListener("resize", function(){
+        WIDTH = window.innerWidth
+        HEIGHT = window.innerHeight
+        canvas.width = WIDTH;
+        canvas.height = HEIGHT;
+    }, false);
     this.wisps = wisps
     this.draw();
+
   }
 
 
